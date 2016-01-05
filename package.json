@@ -1,0 +1,21 @@
+{
+  "name": "gitableton",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-git": "^1.6.0",
+    "gulp-gunzip": "0.0.3",
+    "gulp-gzip": "^1.2.0",
+    "gulp-prompt": "^0.1.2",
+    "gulp-rename": "^1.2.2",
+    "gulp-util": "^3.0.7",
+    "gulp-watch": "^4.3.5"
+  }
+}
