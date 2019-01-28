@@ -5,11 +5,11 @@
 gitable is node cli tool which watches your ableton live project. Every time it detects a change, it will create a new commit.
 
 ## Usage
-* installation: `npm install -g @thomasgeissl/gitable`
+* installation: `npm install -g thomasgeissl/gitable`
 * cd into your project: `cd /Users/thomasgeissl/Desktop/gitabletest\ Project`
 * start the cli: `gitable`
 * quit the current task with ctrl + c
-* the folling tasks are avaible
+* the following tasks are avaible
     * config: initialises a git repo
     * watch: automatically commits when live set is saved
     * commit: manually creates a commit

@@ -15,6 +15,7 @@ let index;
 let oid;
 
 vorpal.command("start").action(function(args, cb) {
+	console.log(currentPath)
   var promise = this.prompt([
     {
       type: "input",
@@ -54,15 +55,9 @@ vorpal.command("init").action(function(args, cb) {
     function(repo) {
       repository = repo;
       self.log("successfully initialised git repo");
-      // In this function we have a repo object that we can perform git operations
-      // on.
-
-      // Note that with a new repository many functions will fail until there is
-      // an initial commit.
       cb();
     },
     function(error) {
-      console.log(error);
       self.log(error);
     }
   );
