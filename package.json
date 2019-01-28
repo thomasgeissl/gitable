@@ -20,6 +20,9 @@
   },
   "dependencies": {
     "gunzip-file": "^0.1.1",
-    "vorpal": "^1.12.0"
+    "node-watch": "^0.6.0",
+    "nodegit": "^0.23.0",
+    "vorpal": "^1.12.0",
+    "vorpal-autocomplete-fs": "0.0.3"
   }
 }

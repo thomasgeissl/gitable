@@ -1,29 +1,201 @@
 const vorpal = require("vorpal")();
+const fsAutocomplete = require("vorpal-autocomplete-fs");
 const gunzipFile = require("gunzip-file");
 const fs = require("fs");
+const path = require("path");
+const watch = require("node-watch");
+const NodeGit = require("nodegit");
 
-const file = process.argv[2];
-fs.watch(file, (event, filename) => {
-	if (filename) {
-		console.log(
-			`${filename} file Changed`,
-			filename.split(".")[0] + ".xml",
-			event
-		);
-		// gunzipFile(filename, filename.split('.')[0] + '.xml')
-		gunzipFile(
-			'/Users/thomasgeissl/Music/klanglichtstrom\ Project/klanglichtstrom.als',
-			"/Users/thomasgeissl/Desktop/klanglichtstrom.xml",
-			() => {
-				console.log('gunzip done!')
-			}
-		);
-	}
+let currentPath = process.cwd();
+
+let watcher;
+
+let repository;
+let index;
+let oid;
+
+vorpal.command("start").action(function(args, cb) {
+  var promise = this.prompt(
+    [
+      {
+        type: "input",
+        name: "path",
+        message: "path: "
+      }
+    ],
+    function(answers) {
+      // You can use callbacks...
+    }
+  );
+
+  promise.then(function(answers) {
+    // Or promises!
+    currentPath = answers.path;
+    NodeGit.Repository.open(currentPath).then(
+      function(successfulResult) {
+        // This is the first function of the then which contains the successfully
+        // calculated result of the promise
+        repository = successfulResult;
+        console.log("successfully opened repository", repository.workdir());
+        vorpal.exec("watch");
+        cb();
+      },
+      function(reasonForFailure) {
+        // This is the second function of the then which contains the reason the
+        // promise failed
+        console.log("could not open repository", reasonForFailure);
+        cb();
+      }
+    );
+  });
 });
 
-vorpal.command("foo", 'Outputs "bar".').action(function (args, callback) {
-	this.log("bar");
-	callback();
+vorpal.command("init").action(function(args, cb) {
+  this.log(path.resolve(currentPath));
+  NodeGit.Repository.init(
+    "/Users/thomasgeissl/Desktop/gitabletest Project/",
+    0
+  ).then(
+    function(repo) {
+      repository = repo;
+      this.log("successfully initialised git repo");
+      // In this function we have a repo object that we can perform git operations
+      // on.
+
+      // Note that with a new repository many functions will fail until there is
+      // an initial commit.
+      cb();
+    },
+    function(error) {
+      console.log(error);
+      this.log(error);
+    }
+  );
+  cb();
 });
+
+vorpal.command("commit").action(function(args, cb) {
+  cb();
+});
+vorpal.command("push").action(function(args, cb) {
+  cb();
+});
+
+vorpal
+  .command("watch")
+  .action(function(args, cb) {
+    if (currentPath) {
+      watcher = watch(currentPath, { recursive: false, delay: 1000 }, function(
+        evt,
+        name
+      ) {
+        // console.log('%s changed.', name);
+        // console.log(evt, name);
+        const parts = name.split(".");
+        if (parts.length > 0 && parts[1] === "als") {
+          const xml = name.split(".")[0] + ".xml";
+          gunzipFile(name, xml);
+          setTimeout(function() {
+            NodeGit.Repository.open(currentPath)
+              .then(
+                function(repo) {
+                  repository = repo;
+                  return repository.refreshIndex();
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function(indexResult) {
+                  index = indexResult;
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function() {
+                  const relativePath = path.relative(currentPath, xml);
+                  console.log(index.entries());
+                  console.log(repository.workdir(), relativePath);
+                  return index.addByPath(relativePath);
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function() {
+                  return index.write();
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function() {
+                  return index.writeTree();
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function(oidResult) {
+                  oid = oidResult;
+                  return NodeGit.Reference.nameToId(repository, "HEAD");
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function(head) {
+                  return repository.getCommit(head);
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .then(
+                function(parent) {
+                  const author = NodeGit.Signature.now(
+                    "gitable",
+                    "thomas.geissl@gmail.com"
+                  );
+                  const committer = NodeGit.Signature.now(
+                    "gitable",
+                    "thomas.geissl@gmail.com"
+                  );
+
+                  return repository.createCommit(
+                    "HEAD",
+                    author,
+                    committer,
+                    "automatic commit on save",
+                    oid,
+                    [parent]
+                  );
+                },
+                function(error) {
+                  console.error(error);
+                }
+              )
+              .done(function(commitId) {
+                console.log("New Commit: ", commitId);
+              });
+          }, 1000);
+        }
+      });
+    }
+    // cb();
+  })
+  .cancel(function() {
+    watcher.close();
+    this.log("TODO: Do you want to commit your current version?");
+  });
 
 vorpal.delimiter("gitable").show();
+// vorpal.parse(process.argv);
+vorpal.exec("start");
