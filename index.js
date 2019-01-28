@@ -15,21 +15,15 @@ let index;
 let oid;
 
 vorpal.command("start").action(function(args, cb) {
-  var promise = this.prompt(
-    [
-      {
-        type: "input",
-        name: "path",
-        message: "path: "
-      }
-    ],
-    function(answers) {
-      // You can use callbacks...
+  var promise = this.prompt([
+    {
+      type: "input",
+      name: "path",
+      message: "path: "
     }
-  );
+  ]);
 
   promise.then(function(answers) {
-    // Or promises!
     currentPath = answers.path;
     NodeGit.Repository.open(currentPath).then(
       function(successfulResult) {
@@ -51,6 +45,7 @@ vorpal.command("start").action(function(args, cb) {
 });
 
 vorpal.command("init").action(function(args, cb) {
+  var self = this;
   this.log(path.resolve(currentPath));
   NodeGit.Repository.init(
     "/Users/thomasgeissl/Desktop/gitabletest Project/",
@@ -58,7 +53,7 @@ vorpal.command("init").action(function(args, cb) {
   ).then(
     function(repo) {
       repository = repo;
-      this.log("successfully initialised git repo");
+      self.log("successfully initialised git repo");
       // In this function we have a repo object that we can perform git operations
       // on.
 
@@ -68,16 +63,49 @@ vorpal.command("init").action(function(args, cb) {
     },
     function(error) {
       console.log(error);
-      this.log(error);
+      self.log(error);
     }
   );
   cb();
 });
 
 vorpal.command("commit").action(function(args, cb) {
+  var self = this;
+  var promise = this.prompt([
+    {
+      type: "input",
+      name: "message",
+      message: "message: "
+    }
+  ]);
+  // TODO: stage *.als and commit them with answers.message
+
+  promise.then(function(answers) {
+    NodeGit.Repository.open(currentPath).then(
+      function(successfulResult) {
+        repository = successfulResult;
+        console.log("successfully opened repository", repository.workdir());
+        cb();
+      },
+      function(reasonForFailure) {
+        console.log("could not open repository", reasonForFailure);
+        cb();
+      }
+    );
+  });
   cb();
 });
+
 vorpal.command("push").action(function(args, cb) {
+  NodeGit.Repository.open(currentPath).then(
+    function(repo) {
+      repository = repo;
+    },
+    function(error) {
+      console.error(error);
+    }
+  );
+  // TODO: push to origin master
   cb();
 });
 
@@ -193,8 +221,9 @@ vorpal
   })
   .cancel(function() {
     watcher.close();
-    this.log("TODO: Do you want to commit your current version?");
   });
+
+vorpal.command("back2live").action(function(args, cb) {});
 
 vorpal.delimiter("gitable").show();
 // vorpal.parse(process.argv);

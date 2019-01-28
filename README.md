@@ -1,31 +1,28 @@
-gulpGitable
-===
+# gitable
 
-Description
----
-gulpGitable is a set of configured gulp tasks, which will allow you to manage your ableton live projects with git.
-It watches your live sets and automatically commits changes.
 
-It does not add media files.
+## Description
+gitable is node cli tool which watches your ableton live project. Every time it detects a change, it will create a new commit.
 
-This is a work in progress and might undergo some changes.
+## Usage
+* installation: `npm install -g @thomasgeissl/gitable`
+* cd into your project: `cd /Users/thomasgeissl/Desktop/gitabletest\ Project`
+* start the cli: `gitable`
+* quit the current task with ctrl + c
+* the folling tasks are avaible
+    * config: initialises a git repo
+    * watch: automatically commits when live set is saved
+    * commit: manually creates a commit
+    * push: pushes to origin master
+    * back2live: generates the ableton readable als file
 
-Basic usage
----
-* Clone this repo into your ableton project
-* Install dependencies: ```npm install```
-* Init git: ```gulp init```
-* Add a remote repository: ```gulp addRemote```
-* Start the watch task, which automatically commits your changes everytime a set gets saved: ```gulp watch```
-* Finally push to the remote repo: ```gulp push```
+## License
+This project is released under MIT license, please note that dependencies might be released differently.
 
-Dependencies
----
-* node.js
+Copyright (c) 2019 Thomas Geissl
 
-License
----
-MIT
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-Changelog
----
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
