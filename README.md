@@ -1,8 +1,10 @@
 # gitable
 
-
 ## Description
-gitable is node cli tool which watches your ableton live project. Every time it detects a change, it will create a new commit.
+gitable is node.js cli tool which watches your ableton live project. Every time it detects a change, it will create a new commit.
+This workflow currently ignores your audio files, git lfs support might be added later.
+
+gitable is still incomplete, use at your own risk.
 
 ## Usage
 * installation: `npm install -g thomasgeissl/gitable`
@@ -15,6 +17,8 @@ gitable is node cli tool which watches your ableton live project. Every time it 
     * commit: manually creates a commit
     * push: pushes to origin master
     * back2live: generates the ableton readable als file
+
+In order to switch back to an old version, you will need to stop live. Check out your commit and run the back2live task, which will gzip the xml file.
 
 ## License
 This project is released under MIT license, please note that dependencies might be released differently.

@@ -18,12 +18,14 @@ let index;
 let oid;
 
 vorpal.command("start").action(function(args, cb) {
-  console.log(currentPath);
+	const self = this;
+	self.log("Hello.")
   var promise = this.prompt([
     {
       type: "input",
       name: "path",
-      message: "path: "
+      message: "Where can your Ableton Live project be found? Please enter the absolute path.: ",
+      default: currentPath
     }
   ]);
 
@@ -31,17 +33,30 @@ vorpal.command("start").action(function(args, cb) {
     currentPath = answers.path;
     NodeGit.Repository.open(currentPath).then(
       function(successfulResult) {
-        // This is the first function of the then which contains the successfully
-        // calculated result of the promise
         repository = successfulResult;
-        console.log("successfully opened repository", repository.workdir());
+        self.log("successfully opened repository", repository.workdir());
         vorpal.exec("watch");
         cb();
       },
       function(reasonForFailure) {
-        // This is the second function of the then which contains the reason the
-        // promise failed
-        console.log("could not open repository", reasonForFailure);
+        // self.log("could not open repository", reasonForFailure);
+        var promise = self.prompt([
+          {
+            type: "confirm",
+            name: "config",
+            message:
+              "Do you want to initialise and configure a new git repository?",
+            default: true
+          }
+        ]);
+        promise.then(function(answers) {
+          if (answers.config) {
+            vorpal.exec("config");
+            cb();
+          } else {
+            cb();
+          }
+        });
         cb();
       }
     );
@@ -51,10 +66,7 @@ vorpal.command("start").action(function(args, cb) {
 vorpal.command("config").action(function(args, cb) {
   var self = this;
   this.log(path.resolve(currentPath));
-  NodeGit.Repository.init(
-		currentPath,
-    0
-  ).then(
+  NodeGit.Repository.init(currentPath, 0).then(
     function(repo) {
       repository = repo;
       self.log("successfully initialised git repo");
@@ -62,9 +74,10 @@ vorpal.command("config").action(function(args, cb) {
     },
     function(error) {
       self.log(error);
-  		cb();
+      cb();
     }
   );
+  cb();
 });
 
 vorpal.command("commit").action(function(args, cb) {
@@ -194,6 +207,8 @@ vorpal.command("push").action(function(args, cb) {
 vorpal
   .command("watch")
   .action(function(args, cb) {
+		const self = this
+		this.log("Watching your project for changes ..., ^C to stop")
     if (currentPath) {
       watcher = watch(currentPath, { recursive: false, delay: 1000 }, function(
         evt,
