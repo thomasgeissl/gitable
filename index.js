@@ -1,5 +1,6 @@
 const vorpal = require("vorpal")();
 const fsAutocomplete = require("vorpal-autocomplete-fs");
+const zlib = require('zlib');
 const gunzipFile = require("gunzip-file");
 const fs = require("fs");
 const path = require("path");
@@ -218,7 +219,19 @@ vorpal
     watcher.close();
   });
 
-vorpal.command("back2live").action(function(args, cb) {});
+vorpal.command("back2live").action(function(args, cb) {
+	const zip = zlib.createGzip();
+	fs.readdirSync(currentPath).forEach(file => {
+		file = path.join(currentPath, file)
+		const parts = file.split('.')
+		if(parts.length > 0 && parts[1] === 'xml'){
+			const fileContents = fs.createReadStream(file);
+			const writeStream = fs.createWriteStream(parts[0]+'.als');
+			fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
+			})
+		}
+	})
+});
 
 vorpal.delimiter("gitable").show();
 // vorpal.parse(process.argv);

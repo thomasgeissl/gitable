@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "bin": {
+    "gitable": "index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -14,6 +17,7 @@
     "node-watch": "^0.6.0",
     "nodegit": "^0.23.0",
     "vorpal": "^1.12.0",
-    "vorpal-autocomplete-fs": "0.0.3"
+    "vorpal-autocomplete-fs": "0.0.3",
+    "zlib": "^1.0.5"
   }
 }
