@@ -2,7 +2,7 @@
 
 const vorpal = require("vorpal")();
 const fsAutocomplete = require("vorpal-autocomplete-fs");
-const zlib = require('zlib');
+const zlib = require("zlib");
 const gunzipFile = require("gunzip-file");
 const fs = require("fs");
 const path = require("path");
@@ -18,7 +18,7 @@ let index;
 let oid;
 
 vorpal.command("start").action(function(args, cb) {
-	console.log(currentPath)
+  console.log(currentPath);
   var promise = this.prompt([
     {
       type: "input",
@@ -48,11 +48,11 @@ vorpal.command("start").action(function(args, cb) {
   });
 });
 
-vorpal.command("init").action(function(args, cb) {
+vorpal.command("config").action(function(args, cb) {
   var self = this;
   this.log(path.resolve(currentPath));
   NodeGit.Repository.init(
-    "/Users/thomasgeissl/Desktop/gitabletest Project/",
+		currentPath,
     0
   ).then(
     function(repo) {
@@ -62,9 +62,9 @@ vorpal.command("init").action(function(args, cb) {
     },
     function(error) {
       self.log(error);
+  		cb();
     }
   );
-  cb();
 });
 
 vorpal.command("commit").action(function(args, cb) {
@@ -79,17 +79,101 @@ vorpal.command("commit").action(function(args, cb) {
   // TODO: stage *.als and commit them with answers.message
 
   promise.then(function(answers) {
-    NodeGit.Repository.open(currentPath).then(
-      function(successfulResult) {
-        repository = successfulResult;
-        console.log("successfully opened repository", repository.workdir());
-        cb();
-      },
-      function(reasonForFailure) {
-        console.log("could not open repository", reasonForFailure);
-        cb();
-      }
-    );
+    NodeGit.Repository.open(currentPath)
+      .then(
+        function(repo) {
+          repository = repo;
+          return repository.refreshIndex();
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      .then(
+        function(indexResult) {
+          index = indexResult;
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      .then(
+        function() {
+          let dirCont = fs.readdirSync(currentPath);
+          let files = dirCont.filter(function(elm) {
+            return elm.match(/.*\.(als)/gi);
+          });
+          console.log(files);
+          files.forEach(file => {
+            const relativePath = path.relative(currentPath, file);
+            index.addByPath(relativePath);
+          });
+          return index.write();
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      // .then(
+      //   function() {
+      //     return index.write();
+      //   },
+      //   function(error) {
+      //     console.error(error);
+      //   }
+      // )
+      .then(
+        function() {
+          return index.writeTree();
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      .then(
+        function(oidResult) {
+          oid = oidResult;
+          return NodeGit.Reference.nameToId(repository, "HEAD");
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      .then(
+        function(head) {
+          return repository.getCommit(head);
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      .then(
+        function(parent) {
+          const author = NodeGit.Signature.now(
+            "gitable",
+            "thomas.geissl@gmail.com"
+          );
+          const committer = NodeGit.Signature.now(
+            "gitable",
+            "thomas.geissl@gmail.com"
+          );
+
+          return repository.createCommit(
+            "HEAD",
+            author,
+            committer,
+            answers.message,
+            oid,
+            [parent]
+          );
+        },
+        function(error) {
+          console.error(error);
+        }
+      )
+      .done(function(commitId) {
+        console.log("succesfully commited live set");
+      });
   });
   cb();
 });
@@ -209,7 +293,7 @@ vorpal
                 }
               )
               .done(function(commitId) {
-                console.log("New Commit: ", commitId);
+                console.log("succesfully commited live set");
               });
           }, 1000);
         }
@@ -222,19 +306,21 @@ vorpal
   });
 
 vorpal.command("back2live").action(function(args, cb) {
-	const zip = zlib.createGzip();
-	fs.readdirSync(currentPath).forEach(file => {
-		file = path.join(currentPath, file)
-		const parts = file.split('.')
-		if(parts.length > 0 && parts[1] === 'xml'){
-			const fileContents = fs.createReadStream(file);
-			const writeStream = fs.createWriteStream(parts[0]+'.als');
-			fileContents.pipe(zip).pipe(writeStream).on('finish', (err) => {
-			})
-		}
-	})
+  const zip = zlib.createGzip();
+  fs.readdirSync(currentPath).forEach(file => {
+    file = path.join(currentPath, file);
+    const parts = file.split(".");
+    if (parts.length > 0 && parts[1] === "xml") {
+      const fileContents = fs.createReadStream(file);
+      const writeStream = fs.createWriteStream(parts[0] + ".als");
+      fileContents
+        .pipe(zip)
+        .pipe(writeStream)
+        .on("finish", err => {});
+    }
+  });
 });
 
-vorpal.delimiter("gitable").show();
+vorpal.delimiter("gitable$").show();
 // vorpal.parse(process.argv);
 vorpal.exec("start");
