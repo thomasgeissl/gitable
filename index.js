@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const vorpal = require("vorpal")();
 const fsAutocomplete = require("vorpal-autocomplete-fs");
 const zlib = require('zlib');
