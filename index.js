@@ -6,10 +6,20 @@ const zlib = require("zlib");
 const watch = require("node-watch");
 const yargs = require("yargs");
 const git = require("simple-git/promise");
+const pc = require("./package.json");
 const cwd = process.cwd();
 let repo = null;
 
 // eslint-disable-line
+yargs.command(
+  "version",
+  "prints the version",
+  (yargs) => {},
+  (argv) => {
+    console.log(pc.version);
+  }
+).argv;
+
 yargs.command(
   "init",
   "initialises a git repo",

@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { exec, execSync } = require("child_process");
 
+execSync("node ../index.js version");
 fs.mkdirSync("test");
 fs.writeFileSync(path.join("test", "fake.als.xml"), "");
 
@@ -26,3 +27,6 @@ const proc = exec(
 setTimeout(() => {
   execSync("touch test/fake.als");
 }, 1000);
+
+execSync("npm install -g thomasgeissl/gitable");
+execSync("gitable version");
