@@ -7,6 +7,8 @@ This workflow currently ignores your audio files, git lfs support might be added
 
 gitable is still incomplete, use at your own risk.
 
+## Built status
+[![Build Status](https://travis-ci.com/thomasgeissl/gitable.svg?branch=master)](https://travis-ci.com/thomasgeissl/gitable)
 
 ## Usage
 
