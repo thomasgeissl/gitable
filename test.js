@@ -10,14 +10,14 @@ execSync("cd test && node ../index.js back2live");
 
 const proc = exec(
   "cd test && node ../index.js watch",
+  { timeout: 10000 },
   (error, stdout, stderr) => {
     if (error) {
       console.log(`error: ${error.message}`);
-      process.exit(-1);
+      console.log("should be caused by the 10s timeout for this process");
     }
     if (stderr) {
       console.log(`stderr: ${stderr}`);
-      process.exit(-1);
     }
     console.log(`stdout: ${stdout}`);
   }
@@ -25,7 +25,4 @@ const proc = exec(
 
 setTimeout(() => {
   execSync("touch test/fake.als");
-  setTimeout(() => {
-    proc.kill();
-  }, 2000);
 }, 1000);
