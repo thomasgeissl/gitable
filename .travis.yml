@@ -1,18 +1,8 @@
-matrix:
-    include:
-      - os: osx
-        language: node_js
-        node_js: "12"
-  
-      # - os: linux
-      #   dist: xenial
-      #   sudo: required
-      #   language: node_js
-  
-  language: node_js
-  node_js:
-    - 12
-  
-  script:
-    - yarn install
-    - node ./test.js
+dist: trusty
+language: node_js
+node_js:
+  - "12"
+
+script:
+  - yarn install
+  - node ./test.js
