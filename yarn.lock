@@ -81,11 +81,6 @@ get-caller-file@^2.0.1:
   resolved "https://registry.yarnpkg.com/get-caller-file/-/get-caller-file-2.0.5.tgz#4f94412a82db32f36e3b0b9741f8a97feb031f7e"
   integrity sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==
 
-gunzip-file@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/gunzip-file/-/gunzip-file-0.1.1.tgz#29b3a3cc8a6a58ce553812bc0b13f0a0bb3a5ee2"
-  integrity sha1-KbOjzIpqWM5VOBK8CxPwoLs6XuI=
-
 is-fullwidth-code-point@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/is-fullwidth-code-point/-/is-fullwidth-code-point-3.0.0.tgz#f116f8064fe90b3f7844a38997c0b75051269f1d"

@@ -17,11 +17,15 @@ gitable is still incomplete, use at your own risk.
   - watch: automatically creates a commit when a live set is saved
   - back2live: generates an ableton readable .als file
 
+Use default git commands -such as commit, tag, branch, push, ... - if you need a more advanced setup.
+
 In order to switch back to an old version, you will need to stop live. Check out your commit and run the back2live task, which will gzip the xml file.
 
-## Development
+## Requirements
 
-- node v10
+- nodejs
+- git
+
 
 ## License
 
